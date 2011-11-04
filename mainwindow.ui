@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>400</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuUser">
+    <property name="title">
+     <string>User</string>
+    </property>
+    <addaction name="actionLog_In"/>
+    <addaction name="actionLog_Out"/>
+   </widget>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionEncrypt_File"/>
+    <addaction name="actionDecrypt_File"/>
+   </widget>
+   <widget class="QMenu" name="menuDistribute">
+    <property name="title">
+     <string>Distribute</string>
+    </property>
+    <addaction name="actionShare_Key"/>
+   </widget>
+   <addaction name="menuUser"/>
+   <addaction name="menuFile"/>
+   <addaction name="menuDistribute"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionLog_In">
+   <property name="text">
+    <string>Log In...</string>
+   </property>
+  </action>
+  <action name="actionLog_Out">
+   <property name="text">
+    <string>Log Out...</string>
+   </property>
+  </action>
+  <action name="actionEncrypt_File">
+   <property name="text">
+    <string>Encrypt File</string>
+   </property>
+  </action>
+  <action name="actionDecrypt_File">
+   <property name="text">
+    <string>Decrypt File</string>
+   </property>
+  </action>
+  <action name="actionShare_Key">
+   <property name="text">
+    <string>Share File</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>
