@@ -20,11 +20,9 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
+macx: LIBS += -L$$PWD/cryptopp560/ -lcryptopp
 
+INCLUDEPATH += $$PWD/cryptopp560
+DEPENDPATH += $$PWD/cryptopp560
 
-
-
-
-
-
-
+macx: PRE_TARGETDEPS += $$PWD/cryptopp560/libcryptopp.a
