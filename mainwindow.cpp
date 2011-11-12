@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "sitLog.h"
+#include "core/sitLog.h"
 
 
 MainWindow::MainWindow(QWidget *parent) :

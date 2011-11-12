@@ -14,8 +14,8 @@ SOURCES += main.cpp \
 mainwindow.cpp
 
 HEADERS  += mainwindow.h \
-    sitLog.h \
-    sitObject.h
+    core/sitLog.h \
+    core/sitObject.h
 
 
 FORMS    += mainwindow.ui

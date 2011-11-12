@@ -1,7 +1,7 @@
 #ifndef SITOBJECT_H
 #define SITOBJECT_H
 
-#include "boost/smart_ptr.hpp"
+#include "../boost/smart_ptr.hpp"
 #include "sitLog.h"
 
 namespace SIT{
