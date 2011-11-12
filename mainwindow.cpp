@@ -38,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::authenticationConfirmed()
 {
-    SIT_DEBUG("authentificationConfirmed");
+    SIT_DEBUG << "AUTHENTICATION";
 
     if(m_authComponents->UserText->text().isEmpty())
     {
