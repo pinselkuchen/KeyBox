@@ -23,6 +23,52 @@ sit::AsyCrypt::~AsyCrypt()
 {
 }
 
+void sit::AsyCrypt::test()
+{
+    sit::AsyCrypt *hans = new sit::AsyCrypt();
+
+    std::string publicKey;
+    std::string privateKey;
+
+    hans->CreateKeyPair(&publicKey, &privateKey);
+
+    std::cout << std::endl;
+    std::cout << "PubKey: " << publicKey << std::endl;
+    std::cout << "PrivKey: " << privateKey << std::endl;
+
+    std::string text = "Dies ist ein unverschluesselter Text!";
+    std::string cipher, plain;
+
+    hans->EncryptData(publicKey, text, &cipher);
+
+    std::cout << "text: " << text << std::endl;
+    std::cout << "cipher: " << cipher << std::endl;
+
+    hans->DecryptData(privateKey, &plain, cipher);
+
+    std::cout << "text: " << text << std::endl;
+    std::cout << "plain: " << plain << std::endl;
+}
+
+void sit::AsyCrypt::CreateKeyPair(std::string *pub_key, std::string *priv_key)
+{
+    try
+    {
+        CryptoPP::AutoSeededRandomPool rng;
+
+        CryptoPP::RSA::PrivateKey privateKey;
+        privateKey.GenerateRandomWithKeySize(rng, 1024);
+        CryptoPP::RSA::PublicKey publicKey(privateKey);
+
+        EncodePublicKeyToString(publicKey, pub_key);
+        EncodePrivateKeyToString(privateKey, priv_key);
+    }
+    catch (...)
+    {
+        cerr << "sit::AsyCrypt::CreateKeyPair" << endl;
+    }
+}
+
 bool sit::AsyCrypt::EncryptData(std::string pub_key, std::string data, std::string *enc_data)
 {
     CryptoPP::AutoSeededRandomPool rng;
@@ -39,6 +85,8 @@ bool sit::AsyCrypt::EncryptData(std::string pub_key, std::string data, std::stri
     {
         cerr << "sit::AsyCrypt::EncryptData Caught Exception..." << endl;
         cerr << e.what() << endl;
+
+        return false;
     }
 
     return true;
@@ -60,28 +108,11 @@ bool sit::AsyCrypt::DecryptData(std::string priv_key, std::string *data, std::st
     {
         cerr << "sit::AsyCrypt::DecryptData Caught Exception..." << endl;
         cerr << e.what() << endl;
+
+        return false;
     }
 
     return true;
-}
-
-void sit::AsyCrypt::CreateKeyPair(std::string *pub_key, std::string *priv_key)
-{
-    try
-    {
-        CryptoPP::AutoSeededRandomPool rng;
-
-        CryptoPP::RSA::PrivateKey privateKey;
-        privateKey.GenerateRandomWithKeySize(rng, 1024);
-        CryptoPP::RSA::PublicKey publicKey(privateKey);
-
-        EncodePublicKeyToString(publicKey, pub_key);
-        EncodePrivateKeyToString(privateKey, priv_key);
-    }
-    catch (...)
-    {
-        cerr << "sit::AsyCrypt::CreateKeyPair" << endl;
-    }
 }
 
 void sit::AsyCrypt::EncodeKey(CryptoPP::BufferedTransformation &bt, std::string *key)

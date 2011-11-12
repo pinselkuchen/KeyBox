@@ -11,6 +11,7 @@ class AsyCrypt
 public:
     AsyCrypt();
     ~AsyCrypt();
+    void test();
     void CreateKeyPair(std::string *pub_key, std::string *priv_key);
     bool EncryptData(std::string pub_key, std::string data, std::string *enc_data);
     bool DecryptData(std::string priv_key, std::string *data, std::string enc_data);
