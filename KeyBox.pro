@@ -12,12 +12,14 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
 mainwindow.cpp \
-    sitAsyCrypt.cpp
+    sitAsyCrypt.cpp \
+    sitHashSec.cpp
 
 HEADERS  += mainwindow.h \
     core/sitLog.h \
     core/sitObject.h \
-    sitAsyCrypt.h
+    sitAsyCrypt.h \
+    sitHashSec.h
 
 
 FORMS    += mainwindow.ui
@@ -42,6 +44,8 @@ DEPENDPATH += $$PWD/cryptopp560
 win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/cryptopp560/release/cryptopp.lib
 else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/cryptopp560/debug/cryptopp.lib
 else:unix:!symbian: PRE_TARGETDEPS += $$PWD/cryptopp560/libcryptopp.a
+
+
 
 
 

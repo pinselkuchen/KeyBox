@@ -5,8 +5,6 @@
 #include <base64.h>
 #include <files.h>
 
-#include <string.h>
-
 #include <exception>
 using std::exception;
 

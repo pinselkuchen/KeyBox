@@ -3,6 +3,8 @@
 
 #include <rsa.h>
 
+#include <string>
+
 namespace sit
 
 {
