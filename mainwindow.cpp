@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "core/sitLog.h"
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -12,16 +13,13 @@ MainWindow::MainWindow(QWidget *parent) :
     components->actionDecrypt_File->setEnabled(false);
     components->actionEncrypt_File->setEnabled(false);
     components->actionShare_Key->setEnabled(false);
-
-    //connect(components->actionLog_In, S)
-
-
-
 }
-
 
 
 MainWindow::~MainWindow()
 {
+    SIT_WARN("HALLO TEST") << "New LogFile";
+
     delete components;
+
 }
