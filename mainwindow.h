@@ -2,10 +2,14 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QDialog>
+#include <string.h>
+#include "ui_loginUser.h"
 
 namespace Ui {
     class MainWindow;
 }
+
 
 
 class MainWindow : public QMainWindow
@@ -16,8 +20,17 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+public slots:
+    void authenticationConfirmed();
+
+signals:
+    void openAtuhenticationDialog();
+
+
 private:
-    Ui::MainWindow *components;
+    Ui::MainWindow * m_components;
+    Ui_Dialog * m_authComponents;
+    QDialog * m_authDialog;
 };
 
 
