@@ -56,6 +56,7 @@ void MainWindow::authenticationConfirmed()
     m_authComponents->statusLabel->setText("User OK");
     m_authComponents->statusLabel->setStyleSheet("QLabel { color: black ; }");
     m_authComponents->statusLabel->setText("Please enter your User-Name and Secrete-Key");
+    m_authDialog->close();
 }
 
 
