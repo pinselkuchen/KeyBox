@@ -21,6 +21,8 @@ sit::AsyCrypt::~AsyCrypt()
 {
 }
 
+
+
 void sit::AsyCrypt::test()
 {
     sit::AsyCrypt *hans = new sit::AsyCrypt();
@@ -48,36 +50,46 @@ void sit::AsyCrypt::test()
     std::cout << "plain: " << plain << std::endl;
 }
 
+
+
+
 void sit::AsyCrypt::CreateKeyPair(std::string *pub_key, std::string *priv_key)
 {
-    try
-    {
-        CryptoPP::AutoSeededRandomPool rng;
+    CryptoPP::AutoSeededRandomPool rng;
 
-        CryptoPP::RSA::PrivateKey privateKey;
-        privateKey.GenerateRandomWithKeySize(rng, 1024);
-        CryptoPP::RSA::PublicKey publicKey(privateKey);
+    std::string tmpPubKey;
+    std::string tmpPrivKey;
 
-        EncodePublicKeyToString(publicKey, pub_key);
-        EncodePrivateKeyToString(privateKey, priv_key);
-    }
-    catch (...)
-    {
-        cerr << "sit::AsyCrypt::CreateKeyPair" << endl;
-    }
+    CryptoPP::RSA::PrivateKey privateKey;
+    privateKey.GenerateRandomWithKeySize(rng, 1024);
+    CryptoPP::RSA::PublicKey publicKey(privateKey);
+
+    tmpPubKey = EncodePublicKeyToString(publicKey);
+    tmpPrivKey = EncodePrivateKeyToString(privateKey);
+
+    *pub_key = EncodeStringBase64(tmpPubKey);
+    *priv_key = EncodeStringBase64(tmpPrivKey);
 }
+
+
+
+/******************** EN- & DECRYPTION ********************/
 
 bool sit::AsyCrypt::EncryptData(std::string pub_key, std::string data, std::string *enc_data)
 {
     CryptoPP::AutoSeededRandomPool rng;
 
+    std::string tmpData;
+    std::string tmpPubKey = DecodeStringBase64(pub_key);
+
     CryptoPP::RSA::PublicKey publicKey;
-    DecodePublicKeyFromString(pub_key, &publicKey);
+    DecodePublicKeyFromString(tmpPubKey, &publicKey);
 
     try
     {
         CryptoPP::RSAES_OAEP_SHA_Encryptor encryptor( publicKey );
-        CryptoPP::StringSource( data, true, new CryptoPP::PK_EncryptorFilter( rng, encryptor, new CryptoPP::StringSink( *enc_data ) ) );
+        CryptoPP::StringSource( data, true, new CryptoPP::PK_EncryptorFilter( rng, encryptor, new CryptoPP::StringSink( tmpData ) ) );
+        *enc_data = EncodeStringBase64(tmpData);
     }
     catch ( CryptoPP::Exception &e )
     {
@@ -94,13 +106,16 @@ bool sit::AsyCrypt::DecryptData(std::string priv_key, std::string *data, std::st
 {
     CryptoPP::AutoSeededRandomPool rng;
 
+    std::string tmpData = DecodeStringBase64(enc_data);
+    std::string tmpPrivKey = DecodeStringBase64(priv_key);
+
     CryptoPP::RSA::PrivateKey privateKey;
-    DecodePrivateKeyFromString(priv_key, &privateKey);
+    DecodePrivateKeyFromString(tmpPrivKey, &privateKey);
 
     try
     {
         CryptoPP::RSAES_OAEP_SHA_Decryptor decryptor( privateKey );
-        CryptoPP::StringSource( enc_data, true, new CryptoPP::PK_DecryptorFilter( rng, decryptor, new CryptoPP::StringSink( *data ) ) );
+        CryptoPP::StringSource( tmpData, true, new CryptoPP::PK_DecryptorFilter( rng, decryptor, new CryptoPP::StringSink( *data ) ) );
     }
     catch ( CryptoPP::Exception &e )
     {
@@ -113,123 +128,74 @@ bool sit::AsyCrypt::DecryptData(std::string priv_key, std::string *data, std::st
     return true;
 }
 
+
+
+/******************** KEY EN- & DECODING ********************/
+
 void sit::AsyCrypt::EncodeKey(CryptoPP::BufferedTransformation &bt, std::string *key)
 {
-    try
-    {
-        CryptoPP::StringSink name(*key);
-        bt.CopyTo(name);
-        name.MessageEnd();
-    }
-    catch (...)
-    {
-        cerr << "sit::AsyCrypt::EncodeKeyBase64" << endl;
-    }
+    CryptoPP::StringSink name(*key);
+    bt.CopyTo(name);
+    name.MessageEnd();
 }
 
-void sit::AsyCrypt::EncodeKeyBase64(CryptoPP::BufferedTransformation &bt, std::string *key)
+std::string sit::AsyCrypt::EncodePublicKeyToString(CryptoPP::RSA::PublicKey &key)
 {
-    try
-    {
-        CryptoPP::StringSink name(*key);
-        CryptoPP::Base64Encoder encoder;
-        bt.CopyTo(encoder);
-        encoder.MessageEnd();
-        encoder.CopyTo(name);
-        name.MessageEnd();
-    }
-    catch (...)
-    {
-        cerr << "sit::AsyCrypt::EncodeKeyBase64" << endl;
-    }
+    std::string pub_key;
+
+    CryptoPP::ByteQueue queue;
+    key.DEREncodePublicKey(queue);
+    EncodeKey(queue, &pub_key);
+
+    return pub_key;
 }
 
-void sit::AsyCrypt::EncodePublicKeyToString(CryptoPP::RSA::PublicKey &key, std::string *pub_key)
+std::string sit::AsyCrypt::EncodePrivateKeyToString(CryptoPP::RSA::PrivateKey &key)
 {
-    try
-    {
-        CryptoPP::ByteQueue queue;
-        key.DEREncodePublicKey(queue);
-        //EncodeKeyBase64(queue, pub_key);
-        EncodeKey(queue, pub_key);
-    }
-    catch (...)
-    {
-        cerr << "sit::AsyCrypt::EncodePublicKeyToString" << endl;
-    }
-}
+    std::string priv_key;
 
-void sit::AsyCrypt::EncodePrivateKeyToString(CryptoPP::RSA::PrivateKey &key, std::string *priv_key)
-{
-    try
-    {
-        CryptoPP::ByteQueue queue;
-        key.DEREncodePrivateKey(queue);
-        //EncodeKeyBase64(queue, priv_key);
-        EncodeKey(queue, priv_key);
-    }
-    catch (...)
-    {
-        cerr << "sit::AsyCrypt::EncodePrivateKeyToString" << endl;
-    }
+    CryptoPP::ByteQueue queue;
+    key.DEREncodePrivateKey(queue);
+    EncodeKey(queue, &priv_key);
+
+    return priv_key;
 }
 
 void sit::AsyCrypt::DecodeKey(std::string &key, CryptoPP::BufferedTransformation *bt)
 {
-    try
-    {
-        CryptoPP::StringSource file(key, true /*pumpAll*/);
-        file.TransferTo(*bt);
-        bt->MessageEnd();
-    }
-    catch (...)
-    {
-        cerr << "sit::AsyCrypt::DecodeKeyBase64" << endl;
-    }
-}
-
-void sit::AsyCrypt::DecodeKeyBase64(std::string &key, CryptoPP::BufferedTransformation *bt)
-{
-    try
-    {
-        CryptoPP::StringSource file(key, true /*pumpAll*/);
-        CryptoPP::Base64Decoder decoder;
-        file.TransferTo(decoder);
-        decoder.TransferTo(*bt);
-        bt->MessageEnd();
-    }
-    catch (...)
-    {
-        cerr << "sit::AsyCrypt::DecodeKeyBase64" << endl;
-    }
+    CryptoPP::StringSource file(key, true);
+    file.TransferTo(*bt);
+    bt->MessageEnd();
 }
 
 void sit::AsyCrypt::DecodePublicKeyFromString(std::string &pub_key, CryptoPP::RSA::PublicKey *key)
 {
-    try
-    {
-        CryptoPP::ByteQueue queue;
-        DecodeKey(pub_key, &queue);
-        //DecodeKeyBase64(pub_key, &queue);
-        key->BERDecodePublicKey(queue, false /*paramsPresent*/, queue.MaxRetrievable());
-    }
-    catch (...)
-    {
-        cerr << "sit::AsyCrypt::DecodePublicKeyFromString" << endl;
-    }
+    CryptoPP::ByteQueue queue;
+    DecodeKey(pub_key, &queue);
+    key->BERDecodePublicKey(queue, false, queue.MaxRetrievable());
 }
 
 void sit::AsyCrypt::DecodePrivateKeyFromString(std::string &priv_key, CryptoPP::RSA::PrivateKey *key)
 {
-    try
-    {
-        CryptoPP::ByteQueue queue;
-        DecodeKey(priv_key, &queue);
-        //DecodeKeyBase64(priv_key, &queue);
-        key->BERDecodePrivateKey(queue, false /*paramsPresent*/, queue.MaxRetrievable());
-    }
-    catch (...)
-    {
-        cerr << "sit::AsyCrypt::DecodePrivateKeyFromString" << endl;
-    }
+    CryptoPP::ByteQueue queue;
+    DecodeKey(priv_key, &queue);
+    key->BERDecodePrivateKey(queue, false, queue.MaxRetrievable());
+}
+
+
+
+/******************** BASE64 ********************/
+
+std::string sit::AsyCrypt::EncodeStringBase64(std::string text)
+{
+    std::string tmp;
+    CryptoPP::StringSource(text, true, new CryptoPP::Base64Encoder(new CryptoPP::StringSink(tmp)));
+    return tmp;
+}
+
+std::string sit::AsyCrypt::DecodeStringBase64(std::string text)
+{
+    std::string tmp;
+    CryptoPP::StringSource(text, true, new CryptoPP::Base64Decoder(new CryptoPP::StringSink(tmp)));
+    return tmp;
 }
