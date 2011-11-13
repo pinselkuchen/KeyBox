@@ -27,16 +27,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     openAtuhenticationDialog();
-
-    std::string user = m_authComponents->UserText->text().toStdString();
-    std::string key = m_authComponents->KeyText->text().toStdString();
-
-    SIT_DEV("AUTHENTIFICATION") << "user: "<< user << " key: " << key;
-
-
 }
 
-void MainWindow::authenticationConfirmed()
+
+
+bool MainWindow::authenticationConfirmed()
 {
     SIT_DEBUG << "AUTHENTICATION";
 
@@ -44,28 +39,58 @@ void MainWindow::authenticationConfirmed()
     {
         m_authComponents->statusLabel->setStyleSheet("QLabel { color: red ; }");
         m_authComponents->statusLabel->setText("You forgot to enter your User-Name");
-        return;
+        return false;
     }
 
     if(m_authComponents->KeyText->text().isEmpty())
     {
         m_authComponents->statusLabel->setStyleSheet("QLabel { color: red ; }");
         m_authComponents->statusLabel->setText("You forgot to enter your Secret-Key");
-        return;
+        return false;
     }
+
+    std::string user = m_authComponents->UserText->text().toStdString();
+    std::string userKey = m_authComponents->KeyText->text().toStdString();
+
+    if(false /*!m_userList->exist(user)*/)
+    {
+        m_authComponents->statusLabel->setStyleSheet("QLabel { color: red ; }");
+        m_authComponents->statusLabel->setText("The User dose not exist");
+        return false;
+    }
+
+    std::string userKeyHash;
+
+    if(false /*!m_userList->getHashValue(user, userKeyHash)*/)
+    {
+        SIT_ERROR << "NO HASH VALUE FOUND FOR USER: " << user;
+        m_authComponents->statusLabel->setStyleSheet("QLabel { color: red ; }");
+        m_authComponents->statusLabel->setText("Authentication Problems (Hash-Value)");
+        return false;
+    }
+
+    if(false /*!m_hash->compare(userKeyHash,userKey) */)
+    {
+        SIT_ERROR << "COMPAE HASH VALUE FAILE FOR USER: " << user;
+        m_authComponents->statusLabel->setStyleSheet("QLabel { color: red ; }");
+        m_authComponents->statusLabel->setText("Authentication Problems (Hash-Value)");
+        return false;
+    }
+
     m_authComponents->statusLabel->setText("User OK");
     m_authComponents->statusLabel->setStyleSheet("QLabel { color: black ; }");
     m_authComponents->statusLabel->setText("Please enter your User-Name and Secrete-Key");
     m_authDialog->close();
+
+    SIT_DEBUG("AUTHENTIFICATION") << "user: "<< user << " key: " << true;
+    return true;
+
 }
 
 
 MainWindow::~MainWindow()
 {
-    SIT_WARN("HALLO TEST") << "New LogFile";
-
     delete m_components;
     delete m_authComponents;
     delete m_authDialog;
-
 }

@@ -21,7 +21,7 @@ public:
     ~MainWindow();
 
 public slots:
-    void authenticationConfirmed();
+    bool authenticationConfirmed();
 
 signals:
     void openAtuhenticationDialog();
