@@ -29,15 +29,9 @@ PURPOSE.  See the above copyright notices for more information.
   #endif
 #endif
 
-#if defined(_WIN32)
-  #ifdef mbilog_EXPORTS
-    #define MBILOG_DLL_API __declspec(dllexport)
-  #else
-    #define MBILOG_DLL_API __declspec(dllimport)
-  #endif
-#else
+
   #define MBILOG_DLL_API
-#endif
+//#endif
 
 namespace mbilog {
 
