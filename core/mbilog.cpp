@@ -683,8 +683,8 @@ void mbilog::BackendCout::FormatSmartWindows(const mbilog::LogMessage &l,int /*t
     g_init=true;
 
     std::string title = "mbilog";
-    
-    SetConsoleTitle( title.c_str() );
+
+   // SetConsoleTitle( title.c_str() );
     
     /* Title rendering
     ChangeColor( FOREGROUND_GREEN|FOREGROUND_BLUE|BACKGROUND_BLUE );
